@@ -10,6 +10,7 @@ import SearchBar from './SearchBar';
 import ChatListItem from './ChatListItem';
 import Avatar from './Avatar';
 import GroupModal from './GroupModal';
+import Logo from './Logo';
 
 interface SidebarProps {
   onLogout: () => void;
@@ -109,6 +110,18 @@ export default function Sidebar({ onLogout }: SidebarProps) {
 
   return (
     <div className="sidebar">
+      <div className="px-4 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-1">
+          <Logo size={32} />
+          <button
+            onClick={onLogout}
+            className="p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            title="Logout"
+          >
+            <ArrowRightOnRectangleIcon className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -127,13 +140,6 @@ export default function Sidebar({ onLogout }: SidebarProps) {
               title="Create Group"
             >
               <PlusIcon className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onLogout}
-              className="p-2 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              title="Logout"
-            >
-              <ArrowRightOnRectangleIcon className="w-5 h-5" />
             </button>
           </div>
         </div>

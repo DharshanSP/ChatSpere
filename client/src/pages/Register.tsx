@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { connectSocket } from '../services/socket';
+import Logo from '../components/Logo';
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '', displayName: '' });
@@ -35,11 +36,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500 flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </div>
+          <Logo size={56} className="justify-center mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create account</h1>
           <p className="text-sm text-gray-500 mt-1">Join ChatSphere today</p>
         </div>
