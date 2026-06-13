@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+uploads/*
+!uploads/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
+*.db
+*.db-wal
+*.db-shm
+.next/
+.turbo/
+

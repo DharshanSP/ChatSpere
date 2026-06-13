@@ -1,0 +1,32 @@
+=== CHATSPHERE BACKLOG ===
+
+=== DONE ===
+1. Full project scaffold: server (Express/TypeScript/Socket.IO) + client (React/Vite/Tailwind/Zustand)
+2. SQLite database (better-sqlite3) with schema (9 tables)
+3. Server models as service modules: UserService, ChatService, MessageService, GroupService
+4. All controllers rewritten for SQLite
+5. JWT auth middleware, Multer upload, global error handler
+6. All Express routes: /api/auth, /api/users, /api/chats, /api/groups, /api/files
+7. Socket.IO handler: real-time messaging, typing indicators, online presence
+8. All client components (13)
+9. Client stores: authStore, chatStore, userStore, toastStore (Zustand)
+10. Client services: api.ts (Axios), socket.ts (Socket.IO client)
+11. MongoDB → SQLite migration complete
+12. Both compile with 0 errors
+13. Server starts and connects to SQLite
+14. Full end-to-end API testing complete
+15. File upload tested and working
+16. ChatSpere/ directory cleaned up
+17. README.md updated
+18. Server-side input validation added (Zod)
+19. Client error handling polished (ErrorBoundary, Toast)
+20. [DONE] Server tests — 92 tests passing (Jest + Supertest): auth, users, chats, groups, validation
+21. [DONE] Client tests — 29 tests passing (Vitest + RTL): Login, Register, Avatar, MessageBubble, OnlineStatus, TypingIndicator, SearchBar
+
+=== BUGS FIXED ===
+- _id vs id mismatch on user objects — added _id alias in User.ts
+- Jest 30 testRegex/testMatch conflict — fixed with explicit transform config
+- Server auto-listening in test mode — guarded with NODE_ENV check
+
+=== TO DO ===
+(All items complete!)
