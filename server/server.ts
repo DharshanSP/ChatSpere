@@ -22,12 +22,21 @@ const io = new Server(server, {
   cors: {
     origin: config.corsOrigin,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
 app.use(express.json({ limit: '10mb' }));
 app.use(helmet());
-app.use(cors({ origin: config.corsOrigin }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || config.corsOrigin.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+}));
 app.use(
   rateLimit({
     windowMs: config.rateLimitWindow,
