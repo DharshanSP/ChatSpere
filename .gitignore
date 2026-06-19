@@ -12,4 +12,5 @@ Thumbs.db
 *.db-shm
 .next/
 .turbo/
+*.tsbuildinfo
 

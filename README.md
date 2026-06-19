@@ -23,6 +23,7 @@
 - **Audio / Voice Messages** — inline playback
 - **Document Sharing** — PDF, text, ZIP, Word docs
 - **File Uploads** — with progress indicator
+- **Avatar Upload** — inline camera button in profile editor
 
 ### Online Presence
 - **Real-time Status** — online/offline tracking via socket events
@@ -34,13 +35,14 @@
 - **Registration & Login** — email/password with bcrypt hashing
 - **JWT Authentication** — persisted in localStorage
 - **User Search** — find users by name, username, or email
-- **Profile Management** — update display name, bio, avatar (API-ready)
+- **Profile Management** — inline modal to update display name, bio, and avatar image
 - **Protected Routes** — unauthenticated users redirected to login
 
 ### UI/UX
 - **Responsive Design** — three-column desktop, mobile-friendly
-- **Dark/Light Mode** — Tailwind CSS with `dark:` variants
+- **Dark/Light Mode** — toggle button in sidebar, persists to localStorage, respects system preference, flash-free initialization
 - **Toast Notifications** — success/error/info/warning (4s auto-dismiss)
+- **Socket Error Handling** — connection errors surfaced to console
 - **Error Boundary** — catches rendering crashes with "Try Again"
 - **Loading States** — on all async actions
 - **Empty States** — helpful messages when no conversations
@@ -87,9 +89,9 @@ ChatSphere/
 ├─ api/                   # Vercel serverless entry point
 ├─ client/                # React frontend
 │   ├─ src/
-│   │   ├─ components/    # UI primitives (Avatar, MessageBubble, Sidebar, etc.)
+│   │   ├─ components/    # UI primitives (Avatar, MessageBubble, Sidebar, ProfileModal, etc.)
 │   │   ├─ pages/         # Route pages (Login, Register, ChatView)
-│   │   ├─ store/         # Zustand slices (auth, chats, users, toast)
+│   │   ├─ store/         # Zustand slices (auth, chats, users, toast, theme)
 │   │   ├─ services/      # API wrappers (axios) & Socket.IO client
 │   │   ├─ test/          # Vitest test files
 │   │   └─ types/         # TypeScript interfaces
@@ -172,6 +174,29 @@ npm test
 cd client
 npm test
 ```
+
+---
+
+## Railway Deployment
+
+The backend can also be deployed on Railway (configured via `railway.toml`).
+
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Deploy
+railway up
+```
+
+Set the following environment variables in the Railway dashboard:
+
+| Variable | Value |
+|----------|-------|
+| `JWT_SECRET` | A strong random secret |
+| `CORS_ORIGIN` | Your frontend URL |
+| `DATABASE_URL` | `file:chatsphere.db` |
+| `PORT` | `3001` |
 
 ---
 
