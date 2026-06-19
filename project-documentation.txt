@@ -1,0 +1,436 @@
+================================================================================
+                        CHATSPHERE - PROJECT DOCUMENTATION
+================================================================================
+
+1. OVERVIEW
+--------------------------------------------------------------------------------
+ChatSphere is a full-stack real-time chat application that supports:
+- 1-on-1 messaging
+- Group chats with admin roles and member management
+- Media/file sharing (images, videos, audio, voice messages, documents)
+- Online presence tracking (green dot indicators, "last seen" timestamps)
+- Typing indicators
+- Read receipts (single check = delivered, double check = read)
+- Message replies with inline preview
+- Message history with paginated infinite scroll
+- JWT-based user authentication
+- Dark/light theme toggle
+- Toast notifications
+- Responsive three-column layout
+
+
+2. TECH STACK
+--------------------------------------------------------------------------------
+
+  Frontend:
+  --------
+  - React 19.1.0          - UI library
+  - TypeScript 5.8.3      - Type safety
+  - Vite 6.3.5            - Build tool and dev server
+  - React Router DOM 7.17.0  - Client-side routing
+  - Zustand 5.0.14        - State management (lightweight, minimal boilerplate)
+  - Tailwind CSS 3.4.17   - Utility-first CSS framework
+  - @heroicons/react 2.2.0   - Icon library
+  - @headlessui/react 2.2.10 - Accessible UI primitives (modals)
+  - Axios 1.17.0          - HTTP client for REST API calls
+  - Socket.IO Client 4.8.3 - Real-time WebSocket communication
+  - Vitest 4.1.8          - Unit testing framework
+  - React Testing Library 16.3.2 - Component testing
+
+  Backend:
+  -------
+  - Node.js               - JavaScript runtime
+  - Express 5.2.1         - Web framework for REST API
+  - TypeScript 6.0.3      - Type safety
+  - Socket.IO 4.8.3       - Real-time bidirectional communication
+  - @libsql/client 0.17.3 - SQLite database client (also works with Turso)
+  - jsonwebtoken 9.0.3    - JWT generation and verification
+  - bcryptjs 3.0.3        - Password hashing
+  - Zod 4.4.3             - Request validation schemas
+  - Multer 2.1.1          - File upload handling
+  - Helmet                - Security headers
+  - express-rate-limit    - Rate limiting protection
+  - CORS                  - Cross-origin resource sharing
+  - Jest 29.7.0           - Backend testing
+  - Supertest 7.2.2       - HTTP integration testing
+
+  Database:
+  --------
+  - SQLite (local development)
+  - Turso (production - edge-hosted SQLite-compatible database)
+
+  Deployment:
+  ----------
+  - Vercel (fullstack deployment via serverless functions)
+  - Railway (backend deployment)
+
+
+3. PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+
+  ChatSphere/
+  ├── .env.example              # Server environment variable template
+  ├── .gitignore                # Git ignore rules
+  ├── package.json              # Root workspace (concurrently scripts)
+  ├── vercel.json               # Vercel deployment configuration
+  ├── railway.toml              # Railway deployment configuration
+  ├── README.md                 # Comprehensive documentation
+  ├── backlog.txt               # Development history and pending tasks
+  │
+  ├── client/                   # React Frontend
+  │   ├── package.json          # Frontend dependencies
+  │   ├── vite.config.ts        # Vite config with dev proxy
+  │   ├── tailwind.config.js    # Tailwind CSS configuration
+  │   ├── postcss.config.js     # PostCSS configuration
+  │   ├── tsconfig.json         # TypeScript configuration
+  │   ├── vitest.config.ts      # Vitest configuration
+  │   ├── public/
+  │   │   └── logo.svg          # Application logo
+  │   └── src/
+  │       ├── main.tsx          # App entry point
+  │       ├── App.tsx           # Router setup and route guards
+  │       ├── index.css         # Tailwind directives and custom styles
+  │       ├── types/
+  │       │   └── index.ts      # TypeScript interfaces (User, Message, Chat, Group)
+  │       ├── store/
+  │       │   ├── authStore.ts      # Authentication state
+  │       │   ├── chatStore.ts      # Chat and message state
+  │       │   ├── userStore.ts      # Users and online status
+  │       │   ├── toastStore.ts     # Toast notifications
+  │       │   └── themeStore.ts     # Dark/light theme
+  │       ├── services/
+  │       │   ├── api.ts            # Axios instance and API endpoints
+  │       │   └── socket.ts         # Socket.IO client singleton
+  │       ├── pages/
+  │       │   ├── Login.tsx         # Login page
+  │       │   ├── Register.tsx      # Registration page
+  │       │   └── ChatView.tsx      # Main chat layout (sidebar + chat area)
+  │       ├── components/
+  │       │   ├── Avatar.tsx         # User avatar with initials fallback
+  │       │   ├── ChatArea.tsx       # Message list, header, input area
+  │       │   ├── ChatListItem.tsx   # Sidebar conversation entry
+  │       │   ├── ErrorBoundary.tsx  # Crash recovery boundary
+  │       │   ├── GroupModal.tsx     # Create group dialog
+  │       │   ├── Logo.tsx           # Branded logo component
+  │       │   ├── MessageBubble.tsx  # Individual message display
+  │       │   ├── MessageInput.tsx   # Text input with file upload
+  │       │   ├── OnlineStatus.tsx   # Online/offline indicator
+  │       │   ├── ProfileModal.tsx   # Edit profile dialog
+  │       │   ├── SearchBar.tsx      # Search conversations
+  │       │   ├── Sidebar.tsx        # Left navigation panel
+  │       │   ├── Toast.tsx          # Toast notification container
+  │       │   └── TypingIndicator.tsx # Typing animation
+  │       └── test/
+  │           ├── setup.ts           # Test setup
+  │           ├── mocks.ts           # Mock data
+  │           └── *.test.tsx         # Component and page tests
+  │
+  └── server/                   # Express Backend
+      ├── package.json          # Backend dependencies
+      ├── server.ts             # Entry point (Express app + Socket.IO)
+      ├── tsconfig.json         # TypeScript configuration
+      ├── tsconfig.test.json    # Jest TypeScript configuration
+      ├── uploads/              # File storage directories
+      └── src/
+          ├── config.ts             # Environment configuration
+          ├── database.ts           # SQLite connection and schema
+          ├── models/
+          │   ├── User.ts           # User database operations
+          │   ├── Chat.ts           # Chat database operations
+          │   ├── Message.ts        # Message database operations
+          │   └── Group.ts          # Group database operations
+          ├── controllers/
+          │   ├── authController.ts     # Register and login logic
+          │   ├── chatController.ts     # Chat CRUD operations
+          │   ├── userController.ts     # User profile operations
+          │   ├── groupController.ts    # Group CRUD operations
+          │   └── fileController.ts     # File upload handling
+          ├── middleware/
+          │   ├── authMiddleware.ts     # JWT verification
+          │   ├── errorHandler.ts       # Global error handling
+          │   ├── uploadMiddleware.ts   # Multer file upload config
+          │   └── validation.ts         # Zod schema validation
+          ├── routes/
+          │   ├── authRoutes.ts     # /api/auth/*
+          │   ├── userRoutes.ts     # /api/users/*
+          │   ├── chatRoutes.ts     # /api/chats/*
+          │   ├── groupRoutes.ts    # /api/groups/*
+          │   └── fileRoutes.ts     # /api/files/*
+          ├── sockets/
+          │   └── socketHandler.ts  # Real-time event handling
+          └── tests/
+              ├── auth.test.ts
+              ├── chats.test.ts
+              ├── groups.test.ts
+              ├── users.test.ts
+              └── validation.test.ts
+
+
+4. HOW IT WORKS - ARCHITECTURE
+--------------------------------------------------------------------------------
+
+  4.1 Frontend Architecture (React + TypeScript + Vite)
+  ----------------------------------------------------
+  The frontend follows a feature-based folder structure with state managed by Zustand.
+
+  Data Flow:
+    1. User interacts with a component (e.g., sending a message)
+    2. Component calls a service function (api.ts or socket.ts)
+    3. Service sends request to the backend
+    4. Backend processes and responds
+    5. Service updates Zustand store
+    6. React component re-renders due to store subscription
+
+  State Management (Zustand):
+    - authStore:      Manages user session (token, user data, login/logout actions)
+    - chatStore:      Manages conversations, messages, active chat, typing indicators
+    - userStore:      Manages user list and online status
+    - toastStore:     Manages toast notifications (auto-dismiss after 4 seconds)
+    - themeStore:     Manages dark/light theme (persisted to localStorage)
+
+  Routing (React Router DOM v7):
+    - /login       - Login page (public)
+    - /register    - Registration page (public)
+    - /chat        - Main chat view (protected - redirects to /login if not authenticated)
+    - /chat/:chatId - Main chat view with specific conversation selected
+
+  API Layer:
+    - Axios instance with interceptor that automatically attaches JWT token
+    - On 401 response, automatically logs out and redirects to login
+    - All API endpoints are defined in services/api.ts
+
+  Real-time Communication:
+    - Socket.IO client connects after authentication
+    - Listens for: new_message, new_group_message, typing_start, typing_stop,
+      messages_read, user_online, user_offline
+    - Emits: send_message, group_message, typing_start, typing_stop, message_seen
+
+  4.2 Backend Architecture (Express + TypeScript + Socket.IO)
+  ----------------------------------------------------------
+  The backend follows an MVC-like layered architecture.
+
+  Flow:
+    1. HTTP request arrives at Express server
+    2. Middleware runs (CORS, Helmet, rate limiting, auth, validation)
+    3. Router directs to appropriate controller
+    4. Controller calls model methods for database operations
+    5. Response is sent back as JSON
+
+  Authentication:
+    - Users register with username, email, and password
+    - Password is hashed using bcryptjs (10 rounds)
+    - On login, server returns a JWT token (expires in 7 days) and user data
+    - JWT is verified by authMiddleware for protected routes
+    - Socket.IO connections also require JWT authentication
+
+  Database (SQLite via @libsql/client):
+    - 9 tables with 6 indexes
+    - Tables: users, chats, chat_participants, messages, message_readBy,
+      message_deliveredTo, groups, group_members, group_admins
+    - Raw SQL queries (no ORM) for full control
+    - Uses @libsql/client which works with both local SQLite and Turso
+
+  File Uploads (Multer):
+    - Files are stored in server/uploads/ organized by type
+    - Supported types: avatars, images, videos, audio, voice_messages, files
+    - MIME type whitelisting per directory
+    - File size limit of 50MB
+
+  Real-time Events (Socket.IO):
+    Client -> Server:
+      - send_message       - Send a 1-on-1 message
+      - group_message      - Send a group message
+      - typing_start       - User started typing
+      - typing_stop        - User stopped typing
+      - message_seen       - User saw a message
+
+    Server -> Client:
+      - new_message        - New 1-on-1 message received
+      - new_group_message  - New group message received
+      - typing_start       - Someone started typing
+      - typing_stop        - Someone stopped typing
+      - messages_read      - Messages were read
+      - user_online        - User came online
+      - user_offline       - User went offline
+
+
+5. DATABASE SCHEMA
+--------------------------------------------------------------------------------
+
+  users:
+    id (TEXT PRIMARY KEY), username (TEXT UNIQUE), email (TEXT UNIQUE),
+    password (TEXT), displayName (TEXT), avatar (TEXT), bio (TEXT),
+    online (INTEGER), lastSeen (TEXT), createdAt (TEXT), updatedAt (TEXT)
+
+  chats:
+    id (TEXT PRIMARY KEY), lastMessageId (TEXT), createdAt (TEXT), updatedAt (TEXT)
+
+  chat_participants:
+    chatId (TEXT), userId (TEXT)  [COMPOSITE PRIMARY KEY]
+
+  messages:
+    id (TEXT PRIMARY KEY), chatId (TEXT), senderId (TEXT), content (TEXT),
+    messageType (TEXT), fileUrl (TEXT), fileName (TEXT), fileSize (INTEGER),
+    mimeType (TEXT), replyToId (TEXT), createdAt (TEXT), updatedAt (TEXT)
+
+  message_readBy:
+    messageId (TEXT), userId (TEXT)  [COMPOSITE PRIMARY KEY]
+
+  message_deliveredTo:
+    messageId (TEXT), userId (TEXT)  [COMPOSITE PRIMARY KEY]
+
+  groups:
+    id (TEXT PRIMARY KEY), name (TEXT), description (TEXT), avatar (TEXT),
+    creatorId (TEXT), lastMessageId (TEXT), createdAt (TEXT), updatedAt (TEXT)
+
+  group_members:
+    groupId (TEXT), userId (TEXT)  [COMPOSITE PRIMARY KEY]
+
+  group_admins:
+    groupId (TEXT), userId (TEXT)  [COMPOSITE PRIMARY KEY]
+
+
+6. REST API ENDPOINTS
+--------------------------------------------------------------------------------
+
+  Auth:
+    POST   /api/auth/register     - Register new user
+    POST   /api/auth/login        - Login user
+
+  Users:
+    GET    /api/users             - Get all users
+    GET    /api/users/:id         - Get user by ID
+    PUT    /api/users/profile     - Update own profile
+    GET    /api/users/online      - Get online users
+
+  Chats:
+    POST   /api/chats             - Create or get existing 1-on-1 chat
+    GET    /api/chats             - Get user's chats
+    GET    /api/chats/:id         - Get chat by ID
+    POST   /api/chats/:id/messages - Send message in chat
+    GET    /api/chats/:id/messages - Get messages (paginated)
+    PUT    /api/chats/:id/read    - Mark messages as read
+
+  Groups:
+    POST   /api/groups            - Create group
+    GET    /api/groups            - Get user's groups
+    GET    /api/groups/:id        - Get group by ID
+    PUT    /api/groups/:id        - Update group info
+    POST   /api/groups/:id/members - Add members
+    DELETE /api/groups/:id/members/:userId - Remove member
+    POST   /api/groups/:id/messages - Send group message
+    GET    /api/groups/:id/messages - Get group messages (paginated)
+
+  Files:
+    POST   /api/files/upload      - Upload a file
+
+
+7. KEY FEATURES IN DETAIL
+--------------------------------------------------------------------------------
+
+  Real-time Messaging:
+    Messages are sent via Socket.IO for instant delivery. The server persists
+    to the database and broadcasts to all participants. REST endpoints are
+    available for fetching message history.
+
+  Online Presence:
+    Managed via Socket.IO connection/disconnection events. When a user connects
+    or disconnects, the server updates the database and broadcasts to all clients.
+
+  Typing Indicators:
+    Debounced typing events. Client emits typing_start on keystroke and
+    typing_stop after 1.5 seconds of inactivity or on blur/submit.
+
+  Read Receipts:
+    Single checkmark = delivered to server. Double checkmark = read by recipient.
+    When a user views a chat, all unread messages are marked as read.
+
+  Message Replies:
+    Users can reply to any message. The replied message is shown as a preview
+    above the current message.
+
+  Infinite Scroll:
+    Messages are loaded in pages (50 per page). Older messages load when user
+    scrolls to the top of the chat area.
+
+  Dark/Light Theme:
+    Toggled via sidebar button. Preference is stored in localStorage and
+    applied before React renders to prevent flash of wrong theme.
+    Also respects system preference (prefers-color-scheme).
+
+  File Sharing:
+    Supports avatars, images, videos, audio, voice messages, and documents.
+    Files are uploaded via Multer with MIME type validation.
+    Preview is shown inline in message bubbles.
+
+  Group Management:
+    Groups can be created with a name and optional description.
+    Creators automatically become admins. Admins can add/remove members
+    and update group info.
+
+  Responsive Design:
+    Three-column layout on desktop (sidebar, chat list, chat area).
+    Adapts to mobile with single-column views. Uses Tailwind breakpoints.
+
+
+8. DEVELOPMENT SETUP
+--------------------------------------------------------------------------------
+
+  Prerequisites:
+    - Node.js v20+
+    - npm
+
+  Quick Start:
+    1. Clone the repository
+    2. Copy .env.example to .env and configure (or use defaults)
+    3. Run: npm install      (installs root, client, and server deps)
+    4. Run: npm run dev      (starts both client and server concurrently)
+       - Frontend: http://localhost:5173
+       - Backend:  http://localhost:3001
+
+  Environment Variables (server/.env):
+    PORT=3001
+    JWT_SECRET=your-secret-key
+    CORS_ORIGIN=http://localhost:5173
+    DATABASE_URL=file:./chatsphere.db
+    UPLOAD_DIR=./uploads
+    MAX_FILE_SIZE=52428800
+    RATE_LIMIT_WINDOW_MS=900000
+    RATE_LIMIT_MAX=100
+
+  Running Tests:
+    Backend:  cd server && npm test
+    Frontend: cd client && npm test
+
+
+9. DEPLOYMENT
+--------------------------------------------------------------------------------
+
+  Railway (Backend):
+    - railway.toml handles build and start commands
+    - Sets NODE_ENV=production
+    - Uses DATABASE_URL for Turso connection
+
+  Vercel (Fullstack):
+    - vercel.json configures SPA rewrites
+    - api/index.ts re-exports Express app as serverless function
+    - Can be deployed with Turso for production database
+
+
+10. TESTING
+--------------------------------------------------------------------------------
+
+  Backend (Jest + Supertest):
+    - Integration tests for all API endpoints
+    - Tests: auth, chats, groups, users, validation
+    - Uses supertest for HTTP assertions
+
+  Frontend (Vitest + React Testing Library):
+    - Component tests for UI components
+    - Page tests for Login and Register
+    - Mock data and setup files for consistent testing environment
+
+
+================================================================================
+  End of Documentation
+================================================================================
