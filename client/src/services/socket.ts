@@ -26,5 +26,11 @@ export function connectSocket(): Socket {
   if (!s.connected) {
     s.connect();
   }
+  s.on('connect_error', (err) => {
+    console.error('Socket connection error:', err.message);
+  });
+  s.on('error', (err) => {
+    console.error('Socket error:', err);
+  });
   return s;
 }

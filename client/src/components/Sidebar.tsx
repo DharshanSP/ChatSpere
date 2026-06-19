@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '../store/authStore';
 import { useChatStore } from '../store/chatStore';
 import { useUserStore } from '../store/userStore';
+import { useThemeStore } from '../store/themeStore';
 import { chatApi, userApi, groupApi } from '../services/api';
 import { connectSocket, getSocket } from '../services/socket';
 import { Chat, Group } from '../types';
@@ -10,6 +11,7 @@ import SearchBar from './SearchBar';
 import ChatListItem from './ChatListItem';
 import Avatar from './Avatar';
 import GroupModal from './GroupModal';
+import ProfileModal from './ProfileModal';
 import Logo from './Logo';
 
 interface SidebarProps {
@@ -20,8 +22,10 @@ export default function Sidebar({ onLogout }: SidebarProps) {
   const user = useAuthStore((s) => s.user);
   const { chats, groups, setChats, setGroups, setActiveChat, setActiveGroup, activeChat, activeGroup } = useChatStore();
   const { users, setUsers } = useUserStore();
+  const { theme, toggleTheme } = useThemeStore();
   const [search, setSearch] = useState('');
   const [showGroupModal, setShowGroupModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
 
   useEffect(() => {
@@ -113,26 +117,35 @@ export default function Sidebar({ onLogout }: SidebarProps) {
       <div className="px-4 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-1">
           <Logo size={32} />
-          <button
-            onClick={onLogout}
-            className="p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            title="Logout"
-          >
-            <ArrowRightOnRectangleIcon className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            >
+              {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={onLogout}
+              className="p-1.5 text-gray-500 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              title="Logout"
+            >
+              <ArrowRightOnRectangleIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+          <button onClick={() => setShowProfileModal(true)} className="flex items-center gap-3 hover:opacity-80">
             <Avatar src={user?.avatar} name={user?.displayName || ''} size="md" />
-            <div>
+            <div className="text-left">
               <h2 className="font-semibold text-gray-900 dark:text-white text-sm">
                 {user?.displayName}
               </h2>
               <span className="text-xs text-green-500">Online</span>
             </div>
-          </div>
+          </button>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGroupModal(true)}
@@ -226,6 +239,9 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             setShowGroupModal(false);
           }}
         />
+      )}
+      {showProfileModal && (
+        <ProfileModal onClose={() => setShowProfileModal(false)} />
       )}
     </div>
   );

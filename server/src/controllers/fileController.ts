@@ -9,8 +9,9 @@ export async function uploadFile(req: AuthRequest, res: Response): Promise<void>
     }
 
     const file = req.file;
+    const relativePath = file.path.replace(/\\/g, '/').split('/uploads/')[1];
     res.status(201).json({
-      fileUrl: `/uploads/${file.destination.split('uploads\\')[1] || file.destination.split('uploads/')[1]}/${file.filename}`,
+      fileUrl: `/uploads/${relativePath}`,
       fileName: file.originalname,
       fileSize: file.size,
       mimeType: file.mimetype,
